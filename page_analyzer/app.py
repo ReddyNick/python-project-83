@@ -27,7 +27,8 @@ def index():
 @app.route('/urls', methods=['POST'])
 def url_post():
     url = request.form['url']
-    url_norm = urlparse(url).geturl()
+    url_parsed = urlparse(url.lower())
+    url_norm = f'{url_parsed.scheme}://{url_parsed.netloc}'
 
     if len(url_norm) > 255 or not validators.url(url_norm):
         flash('Некорректный URL', 'error')
