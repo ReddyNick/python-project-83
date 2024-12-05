@@ -1,6 +1,7 @@
 import os
 import validators
 import psycopg2
+import requests
 
 from dotenv import load_dotenv
 from urllib.parse import urlparse
@@ -64,10 +65,31 @@ def urls_index():
 
 @app.route('/urls/<id_>/checks', methods=['POST'])
 def url_check(id_):
-    check_info = {'url_id': id_}
-    url_repo.save_check(check_info)
-    flash('Страница успешно проверена', 'success')
+    url_data = url_repo.find(id_)
+
+    check_info = check_site(url_data['name'])
+    if check_info is None:
+        flash('Произошла ошибка при проверке', 'error')
+    else:
+        check_info['url_id'] = id_
+        url_repo.save_check(check_info)
+        flash('Страница успешно проверена', 'success')
+
     return redirect(url_for('url_show', id_=id_))
+
+
+def check_site(url):
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+    except requests.exceptions.RequestException:
+        return None
+
+    status_code = r.status_code
+    check_info = {
+        'status_code': status_code
+    }
+    return check_info
 
 
 @app.errorhandler(404)

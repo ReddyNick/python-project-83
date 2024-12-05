@@ -50,7 +50,8 @@ class UrlRepository:
                     last_checks.status_code
                 FROM urls
                 LEFT JOIN last_checks
-                ON urls.id = last_checks.url_id;
+                ON urls.id = last_checks.url_id
+                ORDER BY urls.id DESC;
                 """)
             self.conn.commit()
             return [dict(row) for row in cur]
@@ -60,11 +61,12 @@ class UrlRepository:
         check_info['created_at'] = timestampt
         with self.conn.cursor() as cur:
             sql = """
-            INSERT INTO url_checks (url_id, created_at)
-            VALUES (%s, %s) RETURNING id;
+            INSERT INTO url_checks (url_id, status_code, created_at)
+            VALUES (%s, %s, %s) RETURNING id;
             """
             cur.execute(sql, (
                 check_info['url_id'],
+                check_info['status_code'],
                 check_info['created_at'],
                 ))
             check_info['id'] = cur.fetchone()[0]
