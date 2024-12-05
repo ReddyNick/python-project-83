@@ -59,16 +59,13 @@ class UrlRepository:
     def save_check(self, check_info):
         timestampt = datetime.now().replace(microsecond=0)
         check_info['created_at'] = timestampt
+        columns, values = zip(*check_info.items())
         with self.conn.cursor() as cur:
-            sql = """
-            INSERT INTO url_checks (url_id, status_code, created_at)
-            VALUES (%s, %s, %s) RETURNING id;
+            sql = f"""
+            INSERT INTO url_checks ({','.join(columns)})
+            VALUES ({','.join(['%s'] * len(columns))}) RETURNING id;
             """
-            cur.execute(sql, (
-                check_info['url_id'],
-                check_info['status_code'],
-                check_info['created_at'],
-                ))
+            cur.execute(sql, values)
             check_info['id'] = cur.fetchone()[0]
             self.conn.commit()
 

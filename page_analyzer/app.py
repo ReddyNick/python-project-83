@@ -9,6 +9,7 @@ from flask import (
     Flask, render_template, request,
     flash, redirect, url_for,
     abort)
+from bs4 import BeautifulSoup
 from page_analyzer.data import UrlRepository
 
 load_dotenv()
@@ -85,10 +86,20 @@ def check_site(url):
     except requests.exceptions.RequestException:
         return None
 
-    status_code = r.status_code
-    check_info = {
-        'status_code': status_code
-    }
+    check_info = {}
+    check_info['status_code'] = r.status_code
+
+    html = r.text
+    soup = BeautifulSoup(html, "html.parser")
+
+    if (h1 := soup.find('h1')) is not None:
+        check_info['h1'] = h1.text
+    if (title := soup.find('title')) is not None:
+        check_info['title'] = title.text
+    desc = soup.find('meta', attrs={'name': 'description', 'content': True})
+    if desc is not None:
+        check_info['description'] = desc['content']
+
     return check_info
 
 
