@@ -1,5 +1,6 @@
-from psycopg2.extras import DictCursor
 from datetime import datetime
+
+from psycopg2.extras import DictCursor
 
 
 class UrlRepository:

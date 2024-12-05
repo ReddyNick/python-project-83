@@ -1,15 +1,14 @@
 import os
-import validators
+from urllib.parse import urlparse
+
 import psycopg2
 import requests
-
-from dotenv import load_dotenv
-from urllib.parse import urlparse
-from flask import (
-    Flask, render_template, request,
-    flash, redirect, url_for,
-    abort)
+import validators
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+from flask import (Flask, abort, flash, redirect, render_template, request,
+                   url_for)
+
 from page_analyzer.data import UrlRepository
 
 load_dotenv()
