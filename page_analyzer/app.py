@@ -6,8 +6,7 @@ import requests
 import validators
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from flask import (Flask, abort, flash, redirect, render_template, request,
-                   url_for)
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 
 from page_analyzer.data import UrlRepository
 
