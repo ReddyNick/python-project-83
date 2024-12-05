@@ -65,6 +65,8 @@ def urls_index():
 @app.route('/urls/<int:id_>/checks', methods=['POST'])
 def url_check(id_):
     url_data = url_repo.find(id_)
+    if url_data is None:
+        return abort(404)
 
     check_info = check_site(url_data['name'])
     if check_info is None:
