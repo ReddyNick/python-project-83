@@ -23,8 +23,7 @@
 </div>
 
 <h2 class="mt-5 mb-3">Проверки</h2>
-
-<form action="/urls/{{ data['id'] }}/checks" method="post">
+<form action="{{ url_for('url_check', id_=data['id']) }}" method="post">
   <input type="submit" class="btn btn-primary" value="Запустить проверку">
 </form>
 
@@ -43,7 +42,7 @@
     <tbody>
       {% for row in check_data %}
         <tr>
-          <td>{{ row['id']}}</td>
+          <td>{{ row['id'] }}</td>
           <td>{{ row['status_code'] if row['status_code'] else '' }}</td>
           <td>{{ row['h1'] if row['h1'] else ''}}</td>
           <td>{{ row['title'] if row['title'] else ''}}</td>
