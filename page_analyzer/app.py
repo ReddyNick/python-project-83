@@ -50,13 +50,24 @@ def url_show(id_):
     if url_data is None:
         return abort(404)
 
-    return render_template('urls/show.html', data=url_data)
+    check_data = url_repo.get_all_checks(id_)
+    return render_template('urls/show.html',
+                           data=url_data,
+                           check_data=check_data)
 
 
 @app.route('/urls')
 def urls_index():
     urls_list = url_repo.get_list()
     return render_template('urls/index.html', urls_list=urls_list)
+
+
+@app.route('/urls/<id_>/checks', methods=['POST'])
+def url_check(id_):
+    check_info = {'url_id': id_}
+    url_repo.save_check(check_info)
+    flash('Страница успешно проверена', 'success')
+    return redirect(url_for('url_show', id_=id_))
 
 
 @app.errorhandler(404)

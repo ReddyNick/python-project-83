@@ -34,6 +34,50 @@ class UrlRepository:
 
     def get_list(self):
         with self.conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute("SELECT * FROM urls;")
+            cur.execute(
+                """
+                WITH last_checks AS (
+                    SELECT a.* FROM url_checks as a
+                    INNER JOIN (
+                        SELECT MAX(id) as max_id FROM url_checks
+                        GROUP BY url_id
+                    ) as b
+                    ON a.id = b.max_id
+                )
+                SELECT
+                    urls.*,
+                    last_checks.created_at as last_check_time,
+                    last_checks.status_code
+                FROM urls
+                LEFT JOIN last_checks
+                ON urls.id = last_checks.url_id;
+                """)
+            self.conn.commit()
+            return [dict(row) for row in cur]
+
+    def save_check(self, check_info):
+        timestampt = datetime.now().replace(microsecond=0)
+        check_info['created_at'] = timestampt
+        with self.conn.cursor() as cur:
+            sql = """
+            INSERT INTO url_checks (url_id, created_at)
+            VALUES (%s, %s) RETURNING id;
+            """
+            cur.execute(sql, (
+                check_info['url_id'],
+                check_info['created_at'],
+                ))
+            check_info['id'] = cur.fetchone()[0]
+            self.conn.commit()
+
+        return check_info
+
+    def get_all_checks(self, id):
+        with self.conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                SELECT * FROM url_checks
+                WHERE url_id = %s ORDER BY created_at DESC;
+                """, (id,))
             self.conn.commit()
             return [dict(row) for row in cur]

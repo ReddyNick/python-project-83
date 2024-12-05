@@ -5,16 +5,26 @@
 <h1>Сайты</h1>
  
 <div class="table-responsive">
-    <table class="table table-bordered table-hover text-nowrap" data-test="urls">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Имя</th>
-                <th>Последняя проверка</th>
-                <th>Код ответа</th>
-            </tr>
-        </thead>
-    </table>
+  <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Последняя проверка</th>
+        <th>Код ответа</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in urls_list %}
+        <tr>
+          <td>{{ row['id']}}</td>
+          <td>{{ row['name'] }}</td>
+          <td>{{ row['last_check_time'].strftime('%Y-%m-%d') if row['last_check_time'] else ''}}</td>
+          <td>{{ row['status_code'] if row['status_code'] else ''}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 {% endblock %}
