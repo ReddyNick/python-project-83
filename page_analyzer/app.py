@@ -46,7 +46,7 @@ def url_post():
     return redirect(url_for('url_show', id_=url_data['id']))
 
 
-@app.route('/urls/<id_>')
+@app.route('/urls/<int:id_>')
 def url_show(id_):
     url_data = url_repo.find(id_)
     if url_data is None:
@@ -64,7 +64,7 @@ def urls_index():
     return render_template('urls/index.html', urls_list=urls_list)
 
 
-@app.route('/urls/<id_>/checks', methods=['POST'])
+@app.route('/urls/<int:id_>/checks', methods=['POST'])
 def url_check(id_):
     url_data = url_repo.find(id_)
 
