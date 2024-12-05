@@ -34,7 +34,7 @@ def url_post():
 
     if len(url_norm) > 255 or not validators.url(url_norm):
         flash('Некорректный URL', 'error')
-        return render_template('index.html', form_url=url)
+        return render_template('index.html', form_url=url), 422
 
     url_data = url_repo.find_by_name(url_norm)
     if url_data is not None:
